@@ -35,7 +35,17 @@ int main(int argc, char* argv[]) {
         s.setup(argv[3]);
         while(s.do_listen());
     } else {
-//        CNetUDPClient c;
+        CNetUDPClient c;
+        c.setup(argv[2], argv[3]);
+        int rtt = 0;
+        std::string text("hello !!! :3");
+        std::vector<uint8_t> tx(text.begin(), text.end());
+        std::vector<uint8_t> rx;
+        while(true) {
+            c.do_yap(tx,rx,rtt);
+            spdlog::info("Result: " + std::string(rx.begin(), rx.end()) + " RTT: " + std::to_string(rtt));
+        }
+
     }
     return 0;
 }
