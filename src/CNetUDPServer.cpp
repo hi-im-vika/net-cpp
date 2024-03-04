@@ -43,19 +43,28 @@ bool CNetUDPServer::init_net() {
 }
 
 bool CNetUDPServer::do_listen() {
-    _recv_buffer.reserve(65535);
+    _recv_buffer.resize(65535);
 
     // listen for client
     _client_addr_len = sizeof(_client_addr);
-    _read_code = recvfrom(_socket_fd, _recv_buffer.data(), _recv_buffer.size(), 0, (struct sockaddr *) &_client_addr, &_client_addr_len);
+    _read_code = recvfrom(_socket_fd, _recv_buffer.data(), _recv_buffer.capacity(), 0, (struct sockaddr *) &_client_addr, &_client_addr_len);
     if (_read_code < 0) {
         spdlog::error("Error reading data.");
         close(_socket_fd);
         return false;
     }
 
-    spdlog::info("Received: " + std::string(_recv_buffer.begin(), _recv_buffer.end()) + " from " + std::string(inet_ntoa(_client_addr.sin_addr)));
-    _msg = "Hello!";
+    if (_recv_buffer.at(0) == '\5') {
+        spdlog::info("Received: ENQ from " + std::string(inet_ntoa(_client_addr.sin_addr)) + ", responding with ACK");
+        _msg = '\6';
+    } else {
+        int recv_len;
+        for (recv_len = 0; recv_len < _recv_buffer.size(); recv_len++) {
+            if (!_recv_buffer.at(recv_len)) break;
+        }
+        spdlog::info("Received: " + std::string(_recv_buffer.begin(),_recv_buffer.begin() + recv_len) + " from " + std::string(inet_ntoa(_client_addr.sin_addr)));
+        _msg = "Hello!";
+    }
 
     // respond to client
     if (sendto(_socket_fd, _msg.data(), _msg.length(), 0, (struct sockaddr *) &_client_addr, _client_addr_len) <
