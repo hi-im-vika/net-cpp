@@ -34,5 +34,5 @@ public:
     ~CNetUDPServer();
     void setup(const std::string& port);
     void setdn() const;
-    bool do_listen();
+    bool do_listen(const std::vector<uint8_t> &yap_data, std::vector<uint8_t> &opposite_of_yap);
 };

@@ -42,7 +42,7 @@ bool CNetUDPServer::init_net() {
     return true;
 }
 
-bool CNetUDPServer::do_listen() {
+bool CNetUDPServer::do_listen(const std::vector<uint8_t> &yap_data, std::vector<uint8_t> &opposite_of_yap) {
     _recv_buffer.resize(65535);
 
     // listen for client
@@ -63,7 +63,7 @@ bool CNetUDPServer::do_listen() {
             if (!_recv_buffer.at(recv_len)) break;
         }
         spdlog::info("Received: " + std::string(_recv_buffer.begin(),_recv_buffer.begin() + recv_len) + " from " + std::string(inet_ntoa(_client_addr.sin_addr)));
-        _msg = "Hello!";
+        _msg = std::string(yap_data.begin(),yap_data.end());
     }
 
     // respond to client

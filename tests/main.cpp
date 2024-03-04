@@ -33,7 +33,10 @@ int main(int argc, char* argv[]) {
     if (is_server) {
         CNetUDPServer s;
         s.setup(argv[3]);
-        while(s.do_listen());
+        std::string text("server says hello back !!! :3");
+        std::vector<uint8_t> tx(text.begin(), text.end());
+        std::vector<uint8_t> rx;
+        while(s.do_listen(tx,rx));
     } else {
         CNetUDPClient c;
         c.setup(argv[2], argv[3]);
