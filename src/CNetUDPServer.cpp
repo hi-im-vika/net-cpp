@@ -43,11 +43,12 @@ bool CNetUDPServer::init_net() {
 }
 
 bool CNetUDPServer::do_listen() {
+
     _recv_buffer.reserve(65535);
 
     // listen for client
     _client_addr_len = sizeof(_client_addr);
-    _read_code = recvfrom(_socket_fd, _recv_buffer.data(), _recv_buffer.size(), 0, (struct sockaddr *) &_client_addr, &_client_addr_len);
+    _read_code = recvfrom(_socket_fd, _recv_buffer.data(), _recv_buffer.capacity(), 0, (struct sockaddr *) &_client_addr, &_client_addr_len);
     if (_read_code < 0) {
         spdlog::error("Error reading data.");
         close(_socket_fd);
